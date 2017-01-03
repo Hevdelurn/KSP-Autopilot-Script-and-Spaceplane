@@ -1,0 +1,106 @@
+clearscreen.
+
+lock throttle to 1.0.
+set mysteer to heading(90, 0).
+brakes on.
+lock steering to mysteer.
+print "Counting down:".
+
+from {local countdown is 10.} until countdown = 0 step {set countdown to countdown - 1.} do 
+	{
+	print "..." + countdown.
+	wait 1.
+	}
+clearscreen.
+print "Activating air powered thrusters." at (0, 1).
+stage.
+brakes off.
+wait 2.
+clearscreen.
+print "Releasing brakes." at (0, 1).
+
+until ship:APOAPSIS >= 86000 {
+
+	if ship:velocity:surface:mag < 60 {
+		set mysteer to heading(90, 0).
+
+	} else if ship:velocity:surface:mag >= 60 and ship:velocity:surface:mag < 100 {
+		set mysteer to heading(90, 15).
+		clearscreen.
+		print "Pitching to 15 degrees." at (0, 1).
+	
+	} else if ship:altitude > 300 and ship:altitude < 400 {
+		gear off.
+		clearscreen.
+		print "Retracting landing gear." at (0, 1).
+		
+	} else if ship:altitude >= 400 and ship:altitude < 20000 {
+		set mysteer to heading(90, 15).
+		clearscreen.
+		print "Maintaining pitch and heading." at (0, 1).
+		
+	} else if ship:altitude >= 20000 and ship:altitude < 24000 {
+		set mysteer to heading (90, 20).
+		clearscreen.
+		print "Pitching to 20 degrees." at (0, 1).	
+
+	} else if ship:altitude >= 24000 and ship:altitude < 25000 {
+		ag1 on.
+		clearscreen.
+		print "Activating rocket mode." at (0, 1).
+
+	} else if ship:altitude >= 25000 and ship:altitude < 50000 {
+		set mysteer to heading (90, 20).
+		clearscreen.
+		print "Maintaining pitch and heading." at (0, 1).
+	
+	}.
+}.
+
+clearscreen.
+print "85km apoapsis reached. Setting throttle to 0." at (0, 1).
+lock throttle to 0.
+set mysteer to heading (90, 15).
+
+until ship:altitude >= 70000 {
+	if ship:altitude >= 50000 and ship:altitude < 50500 {
+		ag9 on.
+		ag10 on.
+		clearscreen.
+		print "Deploying solar panels." at (0, 1).
+	} else if ship:altitude >= 50500 and ship:altitude < 70000 {
+		set mysteer to heading (90, 15).
+		clearscreen.
+		print "Maintaining pitch and heading." at (0, 1).
+	}.
+}.
+set navmode to "orbit".
+set done to false.
+until done {
+	if ship:altitude < 84000 {
+		set mysteer to heading (90, -5).
+	} else if ship:altitude >= 84000 {
+		set done to true.
+	}.
+}.
+
+set done to false.
+until done {
+	when eta:apoapsis <= 10 then {
+		set mysteer to heading (90, -5).
+		lock throttle to 1.0.
+		} if eta:apoapsis <= 1 {
+			set mysteer to heading (90, 5).
+		clearscreen.
+		print "Circularizing..." at (0, 1).
+	when periapsis >= 85000 then {
+		set done to true.
+	}.
+	}.
+}.	
+
+lock throttle to 0.
+print "Circularization complete. Setting throttle to 0.".		
+sas on.
+print "Activating SAS.".
+SET SHIP:CONTROL:PILOTMAINTHROTTLE TO 0.
